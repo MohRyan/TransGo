@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id       String    @id @default(uuid())
+  username String    @unique
+  fullname String
+  email    String
+  password String
+  profile  String?
+  pesanan  pesanan[]
+}
+
+model poBus {
+  id  String @id @default(uuid())
+  PO  String
+  bus Bus[]
+}
+
+model Bus {
+  id         String   @id @default(uuid())
+  bus        String
+  price      Int
+  from       String
+  to         String
+  going      String
+  totalTiket Int
+  pesanan    pesanan?
+
+  poBus   poBus?  @relation(fields: [poBusId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  poBusId String?
+}
+
+enum gender {
+  Pria
+  Wanita
+}
+
+model pesanan {
+  id           String  @id @default(uuid())
+  NIK          String
+  name         String
+  jenisKelamin gender
+  noHP         String
+  userId       String?
+  user         users?  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  bus   Bus    @relation(fields: [busId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  busId String @unique
+}
